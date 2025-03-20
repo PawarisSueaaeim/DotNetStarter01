@@ -170,3 +170,4 @@ D:\MyDisk\Pleum\training-Webprograming\training-dotnetApi1\WebApplication6\WebAp
 D:\MyDisk\Pleum\training-Webprograming\training-dotnetApi1\WebApplication6\WebApplication6\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Security.Cryptography.ProtectedData.dll
 D:\MyDisk\Pleum\training-Webprograming\training-dotnetApi1\WebApplication6\WebApplication6\bin\Debug\net8.0\runtimes\browser\lib\net8.0\System.Text.Encodings.Web.dll
 D:\MyDisk\Pleum\training-Webprograming\training-dotnetApi1\WebApplication6\WebApplication6\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
+D:\MyDisk\Pleum\training-Webprograming\training-dotnetApi1\WebApplication6\WebApplication6\obj\Debug\net8.0\WebApplication6.sourcelink.json

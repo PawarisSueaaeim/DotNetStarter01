@@ -10,6 +10,22 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "WebApplication6.Controllers.EmployeesController",
+    "Method": "AddEmployee",
+    "RelativePath": "api/Employees",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "addEmployee",
+        "Type": "WebApplication6.Models.AddEmployeeDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "WebApplication6.Controllers.WeatherForecastController",
     "Method": "Get",
     "RelativePath": "WeatherForecast",
