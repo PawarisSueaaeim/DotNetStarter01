@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WebApplication6.Data;
 using WebApplication6.Models;
 using WebApplication6.Models.Entities;
@@ -15,6 +16,7 @@ namespace WebApplication6.Controllers
             this.dbContext = dbContext;
         }
 
+        [Authorize]
         [HttpGet]
         public IActionResult GetAllEmployees()
         {
@@ -22,6 +24,7 @@ namespace WebApplication6.Controllers
             return Ok(allEmployees);
         }
 
+        [Authorize]
         [HttpGet]
         [Route("{id:guid}")]
         public IActionResult GetEmployeeById(Guid id)
@@ -36,6 +39,7 @@ namespace WebApplication6.Controllers
             return Ok(employee);
         }
 
+        [Authorize]
         [HttpPost]
         public IActionResult AddEmployee(AddEmployeeDto addEmployee)
         {
@@ -51,6 +55,7 @@ namespace WebApplication6.Controllers
             return Ok(employee);
         }
 
+        [Authorize]
         [HttpPut]
         [Route("{id:guid}")]
         public IActionResult UpdateEmployee(Guid id, UpdateEmployeeDto updateEmployee)
@@ -71,6 +76,7 @@ namespace WebApplication6.Controllers
             return Ok(employee);
         }
 
+        [Authorize]
         [HttpPatch]
         [Route("{id:guid}")]
         public IActionResult UpdateSalary(Guid id, UpdateSalaryDto salary)
@@ -87,6 +93,7 @@ namespace WebApplication6.Controllers
 
         }
 
+        [Authorize]
         [HttpDelete]
         [Route("{id:guid}")]
         public IActionResult DeleteEmployee(Guid id)
