@@ -309,6 +309,10 @@
           "passwordHash": {
             "type": "string",
             "nullable": true
+          },
+          "role": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -332,12 +336,6 @@
         "additionalProperties": false
       },
       "UpdateEmployeeDto": {
-        "required": [
-          "email",
-          "name",
-          "phone",
-          "salary"
-        ],
         "type": "object",
         "properties": {
           "name": {

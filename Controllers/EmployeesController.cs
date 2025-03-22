@@ -55,7 +55,7 @@ namespace WebApplication6.Controllers
             return Ok(employee);
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin,Manager")]
         [HttpPut]
         [Route("{id:guid}")]
         public IActionResult UpdateEmployee(Guid id, UpdateEmployeeDto updateEmployee)
@@ -66,14 +66,22 @@ namespace WebApplication6.Controllers
             {
                 return NotFound();
             }
-
             employee.Name = updateEmployee.Name;
             employee.Email = updateEmployee.Email;
             employee.Phone = updateEmployee.Phone;
             employee.Salary = updateEmployee.Salary;
 
             dbContext.SaveChanges();
-            return Ok(employee);
+
+            var response = new UpdateEmployeeDto()
+            {
+                Name = updateEmployee.Name,
+                Email = updateEmployee.Email,
+                Phone = updateEmployee.Phone,
+                Salary = updateEmployee.Salary
+            };
+
+            return Ok(response);
         }
 
         [Authorize]
@@ -93,7 +101,7 @@ namespace WebApplication6.Controllers
 
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpDelete]
         [Route("{id:guid}")]
         public IActionResult DeleteEmployee(Guid id)

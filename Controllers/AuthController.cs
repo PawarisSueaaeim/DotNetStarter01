@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -53,14 +51,26 @@ namespace WebApplication6.Controllers
             }
             string token = CreateToken(hasUser);
 
-            return Ok(token);
+            var response = new
+            {
+                user = new
+                { 
+                    username = hasUser.Username,
+                    role = hasUser.Role,
+                },
+                token = token,
+            };
+         
+            return Ok(response);
         }
 
         private string CreateToken(Auth user)
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, user.Username)
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Role, user.Role)
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuretion.GetValue<string>("AppSettings:Token")!));
