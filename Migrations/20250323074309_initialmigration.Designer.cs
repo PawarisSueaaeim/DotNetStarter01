@@ -12,7 +12,7 @@ using WebApplication6.Data;
 namespace WebApplication6.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250322063755_initialmigration")]
+    [Migration("20250323074309_initialmigration")]
     partial class initialmigration
     {
         /// <inheritdoc />
@@ -32,6 +32,16 @@ namespace WebApplication6.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("RefreshExpriryToken")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Role")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

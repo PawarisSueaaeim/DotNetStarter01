@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using WebApplication6.Data;
 using WebApplication6.Models;
@@ -49,19 +51,54 @@ namespace WebApplication6.Controllers
             {
                 return BadRequest("Password Invalid");
             }
-            string token = CreateToken(hasUser);
 
             var response = new
             {
                 user = new
-                { 
+                {
                     username = hasUser.Username,
                     role = hasUser.Role,
                 },
-                token = token,
+                refresh_token = GenerateAndSaveRefreshToken(hasUser),
+                access_token = CreateToken(hasUser)
             };
          
             return Ok(response);
+        }
+
+        //[HttpPost]
+        //[Route("refresh-token")]
+        //public async Task<ActionResult<Auth>> RefreshToken(RefreshTokenDto request)
+        //{
+        //    var hasUser = dbContext.Auths.Find(request.UserId);
+        //    if (hasUser is null)
+        //    {
+        //        return BadRequest("User NotFound");
+        //    }
+        //    if (request.RefreshToken == hasUser.RefreshToken)
+            
+        //    return Ok();
+        //}
+
+
+        [HttpPost]
+        [Route("refresh-token")]
+        private async Task<string> GenerateAndSaveRefreshToken(Auth user)
+        {
+            var refreshToken = GenerateRefreshToken();
+            user.RefreshToken = refreshToken;
+            user.RefreshExpriryToken = DateTime.UtcNow.AddDays(7);
+            await dbContext.SaveChangesAsync();
+
+            return refreshToken;
+        }
+
+        private string GenerateRefreshToken()
+        {
+            var randomNumber = new byte[32];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomNumber);
+            return Convert.ToBase64String(randomNumber);
         }
 
         private string CreateToken(Auth user)
