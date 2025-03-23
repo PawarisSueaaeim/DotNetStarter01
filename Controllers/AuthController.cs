@@ -66,23 +66,24 @@ namespace WebApplication6.Controllers
             return Ok(response);
         }
 
-        //[HttpPost]
-        //[Route("refresh-token")]
-        //public async Task<ActionResult<Auth>> RefreshToken(RefreshTokenDto request)
-        //{
-        //    var hasUser = dbContext.Auths.Find(request.UserId);
-        //    if (hasUser is null)
-        //    {
-        //        return BadRequest("User NotFound");
-        //    }
-        //    if (request.RefreshToken == hasUser.RefreshToken)
-            
-        //    return Ok();
-        //}
-
-
         [HttpPost]
         [Route("refresh-token")]
+        public ActionResult<object> RefreshToken(RefreshTokenDto request)
+        {
+            var hasUser = dbContext.Auths.Find(request.UserId);
+            if (hasUser is null)
+            {
+                return BadRequest("User NotFound");
+            }
+            else if (request.RefreshToken != hasUser.RefreshToken || hasUser.RefreshExpriryToken <= DateTime.UtcNow)
+            {
+                return BadRequest("Refresh token invalid, Please login");
+            }
+            var access_token = CreateToken(hasUser);
+
+            return Ok(access_token);
+        }
+
         private async Task<string> GenerateAndSaveRefreshToken(Auth user)
         {
             var refreshToken = GenerateRefreshToken();
