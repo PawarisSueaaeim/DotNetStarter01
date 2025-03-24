@@ -108,9 +108,14 @@ namespace WebApplication6.Controllers
         {
             var employee = dbContext.Employees.Find(id);
 
-            if (employee == null)
+            if (employee is null)
             {
-                return NotFound();
+                var response = new
+                {
+                    user_id = id,
+                    message = "Employee Not Found",
+                };
+                return NotFound(response);
             }
 
             dbContext.Employees.Remove(employee);

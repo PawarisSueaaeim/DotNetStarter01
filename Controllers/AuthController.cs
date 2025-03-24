@@ -26,7 +26,7 @@ namespace WebApplication6.Controllers
             var hasUser = dbContext.Auths.FirstOrDefault(u => u.Username == request.Username);
             if (hasUser != null)
             {
-                return BadRequest("User is already!!");
+                return BadRequest("User already exists!!!");
             }
             var user = new Auth();
             user.Username = request.Username;
