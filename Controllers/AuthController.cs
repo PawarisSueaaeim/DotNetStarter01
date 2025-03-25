@@ -1,11 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 using WebApplication6.Data;
 using WebApplication6.Models;
 using WebApplication6.Models.Entities;
@@ -14,16 +8,21 @@ namespace WebApplication6.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthController(IConfiguration configuretion, ApplicationDbContext dbContext) : ControllerBase
+    public class AuthController : ControllerBase
     {
-        
+        private readonly AuthService _authService;
+        private readonly ApplicationDbContext _dbContext;
+        public AuthController(ApplicationDbContext dbContext, AuthService authService)
+        {   
+            _dbContext = dbContext;
+            _authService = authService;
+        }
 
         [HttpPost]
         [Route("register")]
         public ActionResult<Auth> Register(AuthDto request)
         {
-
-            var hasUser = dbContext.Auths.FirstOrDefault(u => u.Username == request.Username);
+            var hasUser = _dbContext.Auths.FirstOrDefault(u => u.Username == request.Username);
             if (hasUser != null)
             {
                 return BadRequest("User already exists!!!");
@@ -32,8 +31,8 @@ namespace WebApplication6.Controllers
             user.Username = request.Username;
             user.PasswordHash = new PasswordHasher<Auth>().HashPassword(user, request.Password);
            
-            dbContext.Auths.Add(user);
-            dbContext.SaveChanges();
+            _dbContext.Auths.Add(user);
+            _dbContext.SaveChanges();
             
             return Ok(user);
         }
@@ -42,7 +41,7 @@ namespace WebApplication6.Controllers
         [Route("login")]
         public ActionResult<Auth> Login(AuthDto request)
         {
-            var hasUser = dbContext.Auths.FirstOrDefault(u => u.Username == request.Username);
+            var hasUser = _dbContext.Auths.FirstOrDefault(u => u.Username == request.Username);
             if (hasUser == null)
             {
                 return BadRequest("Username not found");
@@ -59,8 +58,8 @@ namespace WebApplication6.Controllers
                     username = hasUser.Username,
                     role = hasUser.Role,
                 },
-                refresh_token = GenerateAndSaveRefreshToken(hasUser),
-                access_token = CreateToken(hasUser)
+                refresh_token = _authService.GenerateAndSaveRefreshToken(hasUser),
+                access_token = _authService.CreateToken(hasUser),
             };
          
             return Ok(response);
@@ -70,7 +69,7 @@ namespace WebApplication6.Controllers
         [Route("refresh-token")]
         public ActionResult<object> RefreshToken(RefreshTokenDto request)
         {
-            var hasUser = dbContext.Auths.Find(request.UserId);
+            var hasUser = _dbContext.Auths.Find(request.UserId);
             if (hasUser is null)
             {
                 return BadRequest("User NotFound");
@@ -79,51 +78,9 @@ namespace WebApplication6.Controllers
             {
                 return BadRequest("Refresh token invalid, Please login");
             }
-            var access_token = CreateToken(hasUser);
+            var access_token = _authService.CreateToken(hasUser);
 
             return Ok(access_token);
-        }
-
-        private async Task<string> GenerateAndSaveRefreshToken(Auth user)
-        {
-            var refreshToken = GenerateRefreshToken();
-            user.RefreshToken = refreshToken;
-            user.RefreshExpriryToken = DateTime.UtcNow.AddDays(7);
-            await dbContext.SaveChangesAsync();
-
-            return refreshToken;
-        }
-
-        private string GenerateRefreshToken()
-        {
-            var randomNumber = new byte[32];
-            using var rng = RandomNumberGenerator.Create();
-            rng.GetBytes(randomNumber);
-            return Convert.ToBase64String(randomNumber);
-        }
-
-        private string CreateToken(Auth user)
-        {
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Role, user.Role)
-            };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuretion.GetValue<string>("AppSettings:Token")!));
-
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var toKenDescriptor = new JwtSecurityToken(
-                    issuer: configuretion.GetValue<string>("AppSettings:Issuer"),
-                    audience: configuretion.GetValue<string>("AppSettings:Audience"),
-                    claims: claims,
-                    expires: DateTime.UtcNow.AddDays(1),
-                    signingCredentials: creds
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(toKenDescriptor);
         }
     }
 }

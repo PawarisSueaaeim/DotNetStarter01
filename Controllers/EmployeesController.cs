@@ -49,7 +49,7 @@ namespace WebApplication6.Controllers
         {
             if (_employeeService.IsDuplicateEmployee(addEmployee.Name, addEmployee.Email))
             {
-                return BadRequest("Duplicate employee!!");
+                return BadRequest("Name or Email already exists!");
             }
             var employee = new Employee()
             {
