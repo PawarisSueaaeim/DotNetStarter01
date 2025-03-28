@@ -63,6 +63,19 @@ namespace WebApplication6.Controllers
             return Ok(employee);
         }
 
+        [Authorize]
+        [HttpPost]
+        [Route("salary")]
+        public ActionResult GetHighSalary(decimal salary)
+        {
+            var employee = _employeeService.GetEmployeeHighSalary(salary);
+            if (employee is null)
+            {
+                return NotFound();
+            }
+            return Ok(employee);
+        }
+
         [Authorize(Roles = "Admin,Manager")]
         [HttpPut]
         [Route("update/{id:guid}")]
