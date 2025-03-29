@@ -42,7 +42,7 @@ namespace WebApplication6.Controllers
         public ActionResult<Auth> Login(AuthDto request)
         {
             var hasUser = _dbContext.Auths.FirstOrDefault(u => u.Username == request.Username);
-            if (hasUser == null)
+            if (hasUser is null)
             {
                 return BadRequest("Username not found");
             }
